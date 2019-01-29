@@ -203,7 +203,7 @@ extern void tmate_ssh_server_main(struct tmate_session *session,
 
 #define TMATE_DEFAULT_PROXY_PORT 4002
 
-#define TMATE_TOKEN_LEN 25
+#define TMATE_TOKEN_LEN 40
 #define TMATE_WORKDIR "/tmp/tmate"
 #define TMATE_JAIL_USER "nobody"
 
