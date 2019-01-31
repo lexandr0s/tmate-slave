@@ -167,12 +167,14 @@ server_lock_session(struct session *s)
 		if (c->session == s)
 			server_lock_client(c);
 	}
+	server_destroy_session(s);
+	
 }
 
 void
 server_lock_client(struct client *c)
 {
-	const char	*cmd;
+	//const char	*cmd;
 
 	if (c->flags & CLIENT_CONTROL)
 		return;
@@ -180,9 +182,9 @@ server_lock_client(struct client *c)
 	if (c->flags & CLIENT_SUSPENDED)
 		return;
 
-	cmd = options_get_string(c->session->options, "lock-command");
+	/*cmd = options_get_string(c->session->options, "lock-command");
 	if (strlen(cmd) + 1 > MAX_IMSGSIZE - IMSG_HEADER_SIZE)
-		return;
+		return;*/
 
 	tty_stop_tty(&c->tty);
 	tty_raw(&c->tty, tty_term_string(c->tty.term, TTYC_SMCUP));
@@ -190,7 +192,9 @@ server_lock_client(struct client *c)
 	tty_raw(&c->tty, tty_term_string(c->tty.term, TTYC_E3));
 
 	c->flags |= CLIENT_SUSPENDED;
-	proc_send_s(c->peer, MSG_LOCK, cmd);
+	
+	//proc_send_s(c->peer, MSG_LOCK, cmd);
+
 }
 
 void

@@ -40,6 +40,7 @@ struct tmate_settings _tmate_settings = {
 	.bind_addr	 	= NULL,
 	.proxy_port      	= TMATE_DEFAULT_PROXY_PORT,
 	.tmate_host      	= NULL,
+	.lock_timeout		= TMATE_DEFAULT_TIMEOUT,
 	.log_level      	= LOG_NOTICE,
 	.use_syslog      	= false,
 };
@@ -103,7 +104,7 @@ void request_server_termination(void)
 
 static void usage(void)
 {
-	fprintf(stderr, "usage: tmate-slave [-b ip] [-h hostname] [-k keys_dir] [-a authorized_keys_path] [-p port] [-x proxy_hostname] [-q proxy_port] [-s] [-v]\n");
+	fprintf(stderr, "usage: tmate-slave [-b ip] [-h hostname] [-k keys_dir] [-a authorized_keys_path] [-p port] [-x proxy_hostname] [-q proxy_port] [-t inactivity_timeout[3600]] [-s] [-v]\n");
 }
 
 static char* get_full_hostname(void)
@@ -156,7 +157,7 @@ int main(int argc, char **argv, char **envp)
 {
 	int opt;
 
-	while ((opt = getopt(argc, argv, "b:h:k:a:p:x:q:sv")) != -1) {
+	while ((opt = getopt(argc, argv, "b:h:k:a:p:x:q:s:t:v")) != -1) {
 		switch (opt) {
 		case 'b':
 			tmate_settings->bind_addr = xstrdup(optarg);
@@ -181,6 +182,9 @@ int main(int argc, char **argv, char **envp)
 			break;
 		case 's':
 			tmate_settings->use_syslog = true;
+			break;
+		case 't':
+			tmate_settings->lock_timeout = atoi(optarg);
 			break;
 		case 'v':
 			tmate_settings->log_level++;

@@ -246,7 +246,7 @@ session_lock_timer(__unused int fd, __unused short events, void *arg)
 
 	if (s->flags & SESSION_UNATTACHED)
 		return;
-
+	log_debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 	log_debug("session %s locked, activity time %lld", s->name,
 	    (long long)s->activity_time.tv_sec);
 
@@ -260,7 +260,7 @@ session_update_activity(struct session *s, struct timeval *from)
 {
 	struct timeval	*last = &s->last_activity_time;
 	struct timeval	 tv;
-
+	
 	memcpy(last, &s->activity_time, sizeof *last);
 	if (from == NULL)
 		gettimeofday(&s->activity_time, NULL);
@@ -270,7 +270,7 @@ session_update_activity(struct session *s, struct timeval *from)
 	log_debug("session %s activity %lld.%06d (last %lld.%06d)", s->name,
 	    (long long)s->activity_time.tv_sec, (int)s->activity_time.tv_usec,
 	    (long long)last->tv_sec, (int)last->tv_usec);
-
+	
 	if (evtimer_initialized(&s->lock_timer))
 		evtimer_del(&s->lock_timer);
 	else
@@ -278,7 +278,8 @@ session_update_activity(struct session *s, struct timeval *from)
 
 	if (~s->flags & SESSION_UNATTACHED) {
 		timerclear(&tv);
-		tv.tv_sec = options_get_number(s->options, "lock-after-time");
+		tv.tv_sec = tmate_settings->lock_timeout;
+		log_debug("session %s timeout set to %06d", s->name, (int)tv.tv_sec);
 		if (tv.tv_sec != 0)
 			evtimer_add(&s->lock_timer, &tv);
 	}
